@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Books</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+
+<body>
+ <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+ <div class="row">
+    <div class="col-md">
+        <form id="searchForm">
+            <input id="search-input" name="search" placeholder="Search"/>
+            <button type="submit" class="btn btn-success" id="searchButton">Search</button>
+        </form>
+    </div>
+ </div>
+
+ <div class="row">
+
+
+     <div class="col">
+         <div class="mr">
+
+             <form id="addForm">
+                 <div class="form-group">
+                     Isbn:<input class="form-control" name="isbn" required type="text"/>
+                 </div>
+                 <div class="form-group">
+                     Title: <input class="form-control" name="title" required type="text"/>
+                 </div>
+                 <div class="form-group">
+                     Author:<input class="form-control" name="author" required type="text"/>
+                 </div>
+                 <button type="submit" class="btn btn-success">Add</button>
+             </form>
+         </div>
+     </div>
+
+    <div class="col">
+        <div class="container ">
+
+        </div>
+        <div class="text-center" id="tableB"></div>
+
+        <div class="container" id="booksTable">
+            <table border="2" class="table">
+                <thead>
+                <th>Isbn</th>
+                <th>Title</th>
+                <th>Author</th>
+                </thead>
+                <tbody id="booksBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+ </div>
+
+ <script>
+     function findBooks(data){
+         if(data.length == 0){
+             let $tableB = $('#tableB');
+             $tableB.empty();
+             $tableB.show();
+             $('#booksTable').hide();
+         }else {
+             $('#tableB').hide();
+             $('#booksTable').show();
+             let $books = $('#booksBody');
+             $books.empty();
+             data.forEach(function(book){
+                 $books.append('<tr><td>' + book.isbn + '</td><td>' + book.title + '</td><td>' + book.author + '</td></tr>');
+             });
+         }
+
+     }
+     function getAllBooks(){
+         $.ajax({
+             url: '/books',
+             success: function (response) {
+                 findBooks(response)
+             }
+         });
+
+     }
+     function getSearchedBooks(params){
+         $.ajax({
+             url: '/books?search='+params,
+             success: function (response) {
+                 findBooks(response)
+             }
+         });
+     }
+
+     $(function(){
+         window.onload = function (){
+             getAllBooks();
+         }
+         $('#searchForm').on('reset',(e)=>{e.preventDefault();getAllBooks();$('#search-input').val('');});
+         $('#searchForm').submit((e)=>{e.preventDefault();getSearchedBooks($(this).find('[name=search]').val())});
+         $('#addForm').submit(function(e){
+             e.preventDefault();
+             $.ajax({
+                 type: 'POST',
+                 url: '/addBook',
+                 contentType: 'application/json',
+                 data: JSON.stringify({
+                     isbn:$(this).find('[name=isbn]').val(),
+                     title: $(this).find('[name=title]').val(),
+                     author:$(this).find('[name=author]').val()
+                 }),
+                 success: function (response) {
+                     getAllBooks();
+                     $('#addForm')[0].reset();
+                     $('#searchForm')[0].reset();
+                 },
+             });
+         });
+     });
+ </script>
+</body>
+</html>
+
+
