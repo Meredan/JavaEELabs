@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <title>Book main</title>
+</head>
+<body>
+
+<div class="row">
+    <div class="col-md-12 m-3">
+<form method="get" action="/book-add">
+    <input type="submit" class="btn btn-success" value="Create new book"/>
+</form>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-12 m-3">
+<table border="2">
+    <thead>
+    <th>ID</th>
+    <th>Title</th>
+    <th>ISBN</th>
+    <th>Author</th>
+    <th>Pages</th>
+    </thead>
+    <tbody>
+    <tr th:each="book: ${books}">
+        <td th:text="${book.id}"></td>
+        <td th:text="${book.title}"></td>
+        <td th:text="${book.isbn}"></td>
+        <td th:text="${book.author}"></td>
+        <td th:text="${book.page}"></td>
+    </tr>
+    </tbody>
+</table>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 m-3">
+<form method="get" action="/book-search">
+    Search by Title:
+    <br>
+    <input type="text" name="title">
+    <button type="submit" class="btn btn-success">Search</button>
+</form>
+    </div>
+</div>
+
+</body>
+</html>
