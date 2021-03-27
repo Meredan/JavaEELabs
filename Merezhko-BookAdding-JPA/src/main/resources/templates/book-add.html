@@ -1,0 +1,37 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Book adding</title>
+</head>
+<body>
+<div class="row">
+    <div class="col-md-12 m-3">
+<h4>Adding book:</h4>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12 m-3">
+<form action="#" th:action="@{/book-add}" th:object="${bookModel}" method="post">
+    <br/>
+    <label>Title:
+        <input type="text" th:field="*{title}">
+    </label>
+    <br/>
+    <label>ISBN:
+        <input type="text" th:field="*{isbn}"/>
+    </label>
+    <br/>
+    <label>Author:
+        <input type="text" th:field="*{author}"/>
+    </label>
+    <br/>
+    <label>Pages:
+        <input type="text" th:field="*{page}">
+    </label>
+    <br/>
+    <button type="submit" class="btn btn-success">Add book</button>
+</form>
+    </div>
+</div>
+</body>
+</html>
