@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <title>Book service</title>
+</head>
+<body>
+<div class="row">
+    <div class="col-md-12 m-3">
+                   <h3>Register</h3>
+                    <form id="registerForm">
+                        Login
+                            <input name="username" placeholder="Login">
+                        <br>
+                        Password
+                            <input name="password" type="password" placeholder="Password">
+                        <br>
+                        Repeat
+                            <input name="customAuthField" type="password" placeholder="Password">
+                        <br>
+                        <button type="submit" class="btn btn-success">Register</button>
+                    </form>
+                <div id="registerError"> </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+    $(document).ready(
+        function () {
+            $('#registerForm').submit(function (e) {
+                e.preventDefault();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/register',
+                    dataType: 'json',
+                    data: JSON.stringify({
+                        login: $(this).find('[name=username]').val(),
+                        password: $(this).find('[name=password]').val(),
+                        customAuthField: $(this).find('[name=customAuthField]').val(),
+                    }),
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader('Content-Type', 'application/json');
+                    },
+                    success: function () {
+                        window.location.href = window.location.origin + "/";
+                    },
+                    error: function (xhr) {
+                        let $formError = $('#registerError');
+                        $formError.empty();
+                        $formError.append('<p style="color: red">' + JSON.stringify(xhr.responseJSON, null, 4) + '</p>');
+                    }
+                })
+            });
+
+        });
+</script>
+</body>
+</html>

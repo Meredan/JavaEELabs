@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <title>Book service</title>
+</head>
+<body>
+<style>
+    table {
+        border-collapse: collapse;
+    }
+
+    table, th, td {
+        border: 1px solid black;
+        padding: 5px;
+    }
+</style>
+    <ul>
+        <li><a href="/">Main Page</a></li>
+        <li th:if="${#authorization.expression('isFullyAuthenticated()')}"><a href="/profile">Liked books</a></li>
+    </ul>
+<div class="row">
+    <div class="col-md-12 m-3">
+    <div th:if="${#authorization.expression('hasAuthority(''VIEW_ADMIN'')')}">
+            <h5>Add book to DB:</h5>
+                    <form id="createBook" method="post">
+                        <br/>
+                        <label>Title:
+                            <input name="title" type="text">
+                        </label>
+                        <br/>
+                        <label>ISBN:
+                            <input name="isbn" type="text"/>
+                        </label>
+                        <br/>
+                        <label>Author:
+                            <input name="author" type="text"/>
+                        </label>
+                        <br/>
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </form>
+                <div id="formError"></div>
+    </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 m-3">
+        <h4>Books Table</h4>
+        <table >
+            <thead>
+            <th>id</th>
+            <th>title</th>
+            <th>isbn</th>
+            <th>author</th>
+            <th th:if="${#authorization.expression('isFullyAuthenticated()')}"></th>
+            </thead>
+            <tbody id="bookTable">
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12 m-3">
+                <form id="doSearch" method="post">
+                    <br>
+                    <label class="h6">Search:
+                        <select name="select" placeholder="Search by">
+                            <option th:value="title">Title</option>
+                            <option th:value="author">Author</option>
+                            <option th:value="isbn">ISBN</option>
+                        </select>
+                    </label>
+                    <input type="text" name="searchWord">
+                    <button type="submit" class="btn btn-success">Search</button>
+
+                </form>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+    $(document).ready(
+        function () {
+            $('#createBook').submit(function (e) {
+                e.preventDefault();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/add',
+                    dataType: 'json',
+                    data: JSON.stringify({
+                        title: $(this).find('[name=title]').val(),
+                        isbn: $(this).find('[name=isbn]').val(),
+                        author: $(this).find('[name=author]').val()
+                    }),
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader('Content-Type', 'application/json');
+                    },
+                    success: function () {
+                        loadBooks();
+                        alert("Book added");
+                    },
+                    error: function (xhr) {
+                        let $books = $('#formError');
+                        $books.empty();
+                        $books.append('<p>'+JSON.stringify(xhr.responseJSON, null, 4)+'</p>');
+                    }
+                })
+            });
+
+            $('#doSearch').submit(function (e) {
+                e.preventDefault();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/search',
+                    dataType: 'json',
+                    data: JSON.stringify({
+                        searchInput: $(this).find('[name=searchWord]').val(),
+                        searchCriteria: $(this).find('[name=select]').val()
+                    }),
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader('Content-Type', 'application/json');
+                    },
+                    success: function (response) {
+                        setBooks(response);
+                    }
+                })
+
+            });
+
+            loadBooks();
+        });
+
+
+    function loadBooks() {
+        $.ajax({
+                url: '/books',
+                success: (response) => (setBooks(response))
+            }
+        )
+    }
+
+    function likeBook(id) {
+        console.log(id)
+        $.ajax({
+            type: 'POST',
+            url: `/fav-books/${id}`,
+            dataType: 'json',
+            success: function (response) {
+                console.log(response);
+                alert("Added to your list");
+            }
+        });
+    }
+
+    function setBooks(data) {
+        let $books = $('#bookTable');
+
+        $books.empty();
+        data.forEach(book => {
+            $books.append('<tr><td>' + book.id + '</td><td>' + book.title + '</td><td>'
+                + book.isbn + '</td><td>' + book.author + '</td>' +
+                '<td  th:if="${#authorization.expression(\'isFullyAuthenticated()\')}">' +
+                '<button class="btn btn-success" onClick="likeBook(\'' + book.id + '\')" >Like</button></td></tr>');
+        })
+    }
+
+
+</script>
+</body>
+</html>

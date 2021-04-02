@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <title>Book service</title>
+</head>
+<body>
+<style>
+    table {
+        border-collapse: collapse;
+    }
+
+    table, th, td {
+        border: 1px solid black;
+        padding: 5px;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12 m-3">
+       <h1>Liked books</h1>
+            <table border="2">
+                <thead>
+                <th>ID</th>
+                <th>Title</th>
+                <th>ISBN</th>
+                <th>Author</th>
+                <th></th>
+                </thead>
+                <tbody id="favBooksTbl">
+                </tbody>
+            </table>
+    </div>
+</div>
+    <ul>
+        <li><a href="/">Main page</a></li>
+        <li><a href="/book_list">Book list</a></li>
+    </ul>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+    $(document).ready(
+        function () {
+            loadUsersLikedBooks();
+        });
+
+    function loadUsersLikedBooks() {
+        $.ajax({
+            url: '/fav-books',
+            success: function (response) {
+                setUserDetails(response);
+            }
+        });
+    }
+
+
+    function deleteBook(id) {
+        console.log(id)
+        $.ajax({
+            type: 'DELETE',
+            url: `/fav-books/${id}`,
+            dataType: 'json',
+            success: function (response) {
+                loadUsersLikedBooks(response);
+            }
+        });
+    }
+
+    function setUserDetails(data) {
+        let $favBooksTbl = $('#favBooksTbl');
+
+        $favBooksTbl.empty();
+        data.forEach(book => {
+            $favBooksTbl.append('<tr><td>' + book.id + '</td><td>' + book.title + '</td><td>'
+                + book.isbn + '</td><td>' + book.author + '</td><td>' +
+                '<button onClick="deleteBook(\'' + book.id + '\')" >Delete</button></td></tr>');
+        })
+    }
+
+
+</script>
+</body>
+</html>

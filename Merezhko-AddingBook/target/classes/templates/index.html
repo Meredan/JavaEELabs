@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en " xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <title>Book service</title>
+</head>
+<ul>
+    <li><a href="/">Menu</a></li>
+    <li ><a href="/book_list">Book list</a></li>
+    <li th:if="${#authorization.expression('isAnonymous()')}">
+        <a href="/login">Login</a>
+    </li><li th:if="${#authorization.expression('isAnonymous()')}">
+    <a href="/register">Sign Up</a>
+    </li>
+    <li th:if="${#authorization.expression('isFullyAuthenticated()')}">
+        <a href="/login">Change user</a>
+    </li>
+    <li th:if="${#authorization.expression('isFullyAuthenticated()')}"><a href="/profile" >Liked books</a></li>
+</ul>
+
+</html>
